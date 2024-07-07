@@ -1,0 +1,21 @@
+{
+  "name": "recursos-dev-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm nodemon ./src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "5.16.1",
+    "express": "^4.19.2",
+    "prisma": "^5.16.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
