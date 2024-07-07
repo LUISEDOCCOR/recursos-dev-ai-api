@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "pnpm nodemon ./src/index.js",
-    "start": "node ./src/index.js"
+    "dev": "pnpm nodemon index.js",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",

@@ -1,6 +1,6 @@
 import express from "express";
-import categoryRouter from "./routes/categories.routes.js";
-import postRouter from "./routes/posts.routes.js";
+import categoryRouter from "./src/routes/categories.routes.js";
+import postRouter from "./src/routes/posts.routes.js";
 
 const app = express();
 const PORT = 3000;
