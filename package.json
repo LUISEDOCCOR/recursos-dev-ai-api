@@ -12,8 +12,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ai-sdk/openai": "^0.0.37",
     "@prisma/client": "5.16.1",
+    "ai": "^3.2.32",
+    "bcrypt": "^5.1.1",
+    "corss": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
     "prisma": "^5.16.1"
   },
   "devDependencies": {

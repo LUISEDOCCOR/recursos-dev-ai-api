@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider =  "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -24,10 +24,9 @@ model Post {
   title String 
   content String
   src String
+  urlImage String
   isPublic Boolean @default(false)
   createAt DateTime @default(now())
   category Category @relation(fields: [category_id], references: [id])
   category_id Int
-}
-
-
+} 

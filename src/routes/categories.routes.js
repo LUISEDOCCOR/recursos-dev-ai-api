@@ -12,22 +12,4 @@ router.get("/categories", async (req, res) => {
     res.status(500).json(createResponse("Error in server", "error"));
   }
 });
-
-router.get("/category/:id", async (req, res) => {
-  try {
-    const id = parseInt(req.params.id);
-    const posts = await prisma.category.findMany({
-      where: {
-        id: id,
-      },
-      include: {
-        posts: true,
-      },
-    });
-    res.status(200).json(posts);
-  } catch (e) {
-    res.status(500).json(createResponse("Error in server", "error"));
-  }
-});
-
 export default router;

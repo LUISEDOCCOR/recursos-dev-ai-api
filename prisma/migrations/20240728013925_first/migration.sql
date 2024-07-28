@@ -12,8 +12,9 @@ CREATE TABLE `Post` (
     `title` VARCHAR(191) NOT NULL,
     `content` VARCHAR(191) NOT NULL,
     `src` VARCHAR(191) NOT NULL,
-    `isPublic` BOOLEAN NOT NULL,
-    `createAt` DATETIME(3) NOT NULL,
+    `urlImage` VARCHAR(191) NOT NULL,
+    `isPublic` BOOLEAN NOT NULL DEFAULT false,
+    `createAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `category_id` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
