@@ -1,0 +1,5 @@
+install:
+  - pnpm install --no-frozen-lockfile
+
+start:
+  - pnpm run start
