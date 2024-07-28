@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Post` MODIFY `content` VARCHAR(500) NOT NULL,
+    MODIFY `urlImage` VARCHAR(500) NOT NULL;

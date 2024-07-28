@@ -22,9 +22,9 @@ model Category {
 model Post {
   id Int @id @default(autoincrement())
   title String 
-  content String
+  content String @db.VarChar(500)
   src String
-  urlImage String
+  urlImage String @db.VarChar(500)
   isPublic Boolean @default(false)
   createAt DateTime @default(now())
   category Category @relation(fields: [category_id], references: [id])
