@@ -36,6 +36,9 @@ importers:
         specifier: ^5.16.1
         version: 5.16.1
     devDependencies:
+      '@prisma/studio':
+        specifier: ^0.502.0
+        version: 0.502.0
       nodemon:
         specifier: ^3.1.4
         version: 3.1.4
@@ -192,6 +195,9 @@ packages:
 
   '@prisma/get-platform@5.16.1':
     resolution: {integrity: sha512-R4IKnWnMkR2nUAbU5gjrPehdQYUUd7RENFD2/D+xXTNhcqczp0N+WEGQ3ViyI3+6mtVcjjNIMdnUTNyu3GxIgA==}
+
+  '@prisma/studio@0.502.0':
+    resolution: {integrity: sha512-6npUxxkSR1dIILDoSrR0+sdEo+Jqb1KCBOptPAZfQIo21vFwyYlk+VqeSeeupPEeeRndUsSegA1HqKZ1Qu9oKg==}
 
   '@types/diff-match-patch@1.0.36':
     resolution: {integrity: sha512-xFdR6tkm0MWvBfO8xXCSsinYxHcqkQUlcHeSpMC2ukzOb6lwQAfDmW+Qt0AvlGd8HpsS28qKsB+oPeJn9I39jg==}
@@ -1215,6 +1221,8 @@ snapshots:
   '@prisma/get-platform@5.16.1':
     dependencies:
       '@prisma/debug': 5.16.1
+
+  '@prisma/studio@0.502.0': {}
 
   '@types/diff-match-patch@1.0.36': {}
 

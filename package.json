@@ -23,6 +23,7 @@
     "prisma": "^5.16.1"
   },
   "devDependencies": {
+    "@prisma/studio": "^0.502.0",
     "nodemon": "^3.1.4"
   }
 }
