@@ -117,8 +117,23 @@ router.post("/ai/posts", async (req, res)=> {
       )).join('')
     }
 
-    DE TODOS LOS RECURSOS QUE ENCONTRASTE, DIME LOS ID DE CADA RECURSO DE ESTA FORMA [1, 2, 3, ...]. SOLO DIME ESO. 
-    EN EL CASO DE QUE NO HAYA UNO RELACIONADO, SOLO DIME: NO EXISTE
+    UNA VEZ TERMINADO LO ANTERIOR Y HAYA RECURSOS QUE COINCIDAN CON LO SOLICITADO, QUIERO QUE CORRIJAS 
+    EL MENSAJE DEL USUARIO, ÚNICAMENTE LA ORTOGRAFÍA, SI CONSIDERAS QUE ES PREGUNTA, 
+    CONVIÉRTELO EN UNA. SOLO ESO.
+
+    QUIERO QUE ME REGRESES UNA RESPUESTA IGUAL QUE ESTA, SOLO MODIFICANDO LOS DATOS.
+    ES UN DICCIONARIO DE JAVASCRIPT.
+
+    {
+      "posts": DE TODOS LOS RECURSOS QUE ENCONTRASTE, DIME LOS ID DE CADA RECURSO DE ESTA FORMA [1, 2, 3, ...]. SOLO DIME ESO
+      "user": "AQUÍ VA EL MENSAJE DEL USUARIO CUMPLIENDO LAS REGLAS ANTERIORES"
+    }
+
+    SOLO QUERO QUE ME DEVUELVAS EL DICCIONARIO ANTERIOR NADA MÁS
+    NI UN TEXTO MÁS, SOLO EL DICCIONARIO. 
+    ES MUY IMPORTANTE QUE CUMPLAS CON ESTO.
+     
+    EN EL CASO DE QUE NO HAYA UNO RECURSO RELACIONADO, SOLO DIME: NO EXISTE
   `
   
   const perplexity = createOpenAI({
@@ -131,22 +146,30 @@ router.post("/ai/posts", async (req, res)=> {
     prompt: prompt
   })
 
-
-  if(text != "NO EXISTE" && text.includes("[") && text.includes("]")){
+  if(text != "NO EXISTE" && 
+    text.includes("[") && 
+    text.includes("]") && 
+    text.includes("{") && 
+    text.includes("}") && 
+    text.includes(":") ) {
     try{
       const response = JSON.parse(text)
+      console.log(response)
       const posts = await prisma.post.findMany({
         where:{
           isPublic: true,
           id:{
-            in: response
+            in: response.posts
           }
         },
         include:{
           category: true
         }
        })
-      res.status(200).json(posts)
+      res.status(200).json({
+        posts: posts,
+        user: response.user
+      })
     }catch(e){
       res.sendStatus(204)
     } 
