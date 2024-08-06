@@ -68,57 +68,56 @@ router.get("/category/:id", async (req, res) => {
   }
 });
 
-router.post("/ai/posts", async (req, res)=> {
+router.post("/ai/posts", async (req, res) => {
   const userMessage = req.body.message
 
-  if(!userMessage){
-     res.status(400).json(createResponse("All fields are necessary", "error"));
+  if (!userMessage) {
+    res.status(400).json(createResponse("All fields are necessary", "error"));
     return;
   }
 
   const posts = await prisma.post.findMany({
-    where:{
+    where: {
       isPublic: true
     },
-    include:{
+    include: {
       category: true
     }
   })
 
   const prompt = `
-    TE VOY A PASAR VARIOS RECURSOS PARA PROGRAMADORES, PERO OCUPO QUE CUMPLAS TODAS 
+    TE VOY A PASAR VARIOS RECURSOS PARA PROGRAMADORES, PERO OCUPO QUE CUMPLAS TODAS
     LAS SIGUIENTES REGLAS PARA ESCOGER LOS QUE MEJOR SE ACOMODEN CON EL MENSAJE DEL USUARIO.
-    
+
     ESTE ES EL MENSAJE: "${userMessage}"
-    
-    PRIMERO, VERIFICA QUE EL MENSAJE CUMPLA LAS SIGUIENTES REGLAS: 
+
+    PRIMERO, VERIFICA QUE EL MENSAJE CUMPLA LAS SIGUIENTES REGLAS:
 
     1. SI EL MENSAJE NO TIENE QUE VER CON UN TEMA RELACIONADO CON EL MUNDO DE LA PROGRAMACIÓN O ES DE UN TEMA NO ADECUADO, DIME: NO EXISTE
     2. SI EL MENSAJE ES MUY CORTO O SIN SENTIDO, DIME: NO EXISTE
     3. SI EL MENSAJE CONTIENE PALABRAS SENSIBLES O RELACIONADAS CON LA SEXUALIDAD O SIMPLEMENTE INAPROPIADAS PARA TODO EL PÚBLICO, DIME: NO EXISTE
-    
+
     ***ASEGURARTE QUE EL MENSAJE CUMPLA CON LAS REGLAS ANTERIORES.***
-    
-    DE TODOS ESTOS RECURSOS, QUIERO QUE ESCOJAS LOS QUE MEJOR SE ACOMODEN CON EL MENSAJE DEL USUARIO, SIGIENDO ESTAS REGALS  
-    
+
+    DE TODOS ESTOS RECURSOS, QUIERO QUE ESCOJAS LOS QUE MEJOR SE ACOMODEN CON EL MENSAJE DEL USUARIO, SIGIENDO ESTAS REGALS
+
     1. SOLO UTILIZA LAS DESCRIPCIONES PARA SELECCIONARLOS SI NO TIENE EXCLÚYELOS.
     2. SELECCIONA A LOS QUE TENGAN UNA GRAN RELACIÓN CON EL MENSAJE, SI NO TIENEN RELACIÓN EXCLÚYELOS.
-    3. VERIFICA SI LA CATEGORÍA TIENE QUE VER CON UNA RED SOCIAL, PORQUE SI ES ASÍ, EXCLÚYELOS A MENOS QUE EL 
+    3. VERIFICA SI LA CATEGORÍA TIENE QUE VER CON UNA RED SOCIAL, PORQUE SI ES ASÍ, EXCLÚYELOS A MENOS QUE EL
     MENSAJE PIDA ALGO RELACIONADO CON REDES SOCIALES O CREADORES DE CONTENIDO.
 
-    AQUÍ ESTAN LOS RECURSOS RECUERDA ESCOGER CON LAS REGLAS ANTERIORES 
+    AQUÍ ESTAN LOS RECURSOS RECUERDA ESCOGER CON LAS REGLAS ANTERIORES
 
-    ${
-      posts.map((post) => (
-        `ID: ${post.id}
+    ${posts.map((post) => (
+    `ID: ${post.id}
         Descripción: ${post.content}
         Categoría: ${post.category.name}
         \n`
-      )).join('')
+  )).join('')
     }
 
-    UNA VEZ TERMINADO LO ANTERIOR Y HAYA RECURSOS QUE COINCIDAN CON LO SOLICITADO, QUIERO QUE CORRIJAS 
-    EL MENSAJE DEL USUARIO, ÚNICAMENTE LA ORTOGRAFÍA, SI CONSIDERAS QUE ES PREGUNTA, 
+    UNA VEZ TERMINADO LO ANTERIOR Y HAYA RECURSOS QUE COINCIDAN CON LO SOLICITADO, QUIERO QUE CORRIJAS
+    EL MENSAJE DEL USUARIO, ÚNICAMENTE LA ORTOGRAFÍA, SI CONSIDERAS QUE ES PREGUNTA,
     CONVIÉRTELO EN UNA. SOLO ESO.
 
     QUIERO QUE ME REGRESES UNA RESPUESTA IGUAL QUE ESTA, SOLO MODIFICANDO LOS DATOS.
@@ -130,53 +129,78 @@ router.post("/ai/posts", async (req, res)=> {
     }
 
     SOLO QUERO QUE ME DEVUELVAS EL DICCIONARIO ANTERIOR NADA MÁS
-    NI UN TEXTO MÁS, SOLO EL DICCIONARIO. 
+    NI UN TEXTO MÁS, SOLO EL DICCIONARIO.
     ES MUY IMPORTANTE QUE CUMPLAS CON ESTO.
-     
+
     EN EL CASO DE QUE NO HAYA UNO RECURSO RELACIONADO, SOLO DIME: NO EXISTE
   `
-  
+
   const perplexity = createOpenAI({
     apiKey: process.env.PERPLEXITY_APIKEY,
     baseURL: "https://api.perplexity.ai",
   })
-  
+
   const { text } = await generateText({
     model: perplexity("llama-3-sonar-large-32k-chat"),
     prompt: prompt
   })
 
-  if(text != "NO EXISTE" && 
-    text.includes("[") && 
-    text.includes("]") && 
-    text.includes("{") && 
-    text.includes("}") && 
-    text.includes(":") ) {
-    try{
+  if (text != "NO EXISTE" &&
+    text.includes("[") &&
+    text.includes("]") &&
+    text.includes("{") &&
+    text.includes("}") &&
+    text.includes(":")) {
+    try {
       const response = JSON.parse(text)
       console.log(response)
       const posts = await prisma.post.findMany({
-        where:{
+        where: {
           isPublic: true,
-          id:{
+          id: {
             in: response.posts
           }
         },
-        include:{
+        include: {
           category: true
         }
-       })
+      })
       res.status(200).json({
         posts: posts,
         user: response.user
       })
-    }catch(e){
+    } catch (e) {
       res.sendStatus(204)
-    } 
+    }
   }
-  else{
+  else {
     res.sendStatus(204)
   }
+})
+
+router.get("/page/posts/:skip/:take", async (req, res) => {
+  try {
+    const skip = parseInt(req.params.skip)
+    const take = parseInt(req.params.take)
+
+    const posts = await prisma.post.findMany({
+      skip: skip,
+      take: take,
+      include: {
+        category: true
+      }
+    })
+
+    if (posts.length == 0) {
+      res.statusCode(404)
+      return
+    }
+
+    res.status(200).json(posts)
+  } catch (e) {
+    res.status(400)
+  }
+
 })
 
 export default router;
